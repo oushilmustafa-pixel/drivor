@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drive'OR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            light: '#cbb07c',
+                            DEFAULT: '#b39359',
+                            dark: '#967841',
+                        },
+                        dark: '#0f0f0f',
+                    },
+                    fontFamily: {
+                        serif: ['Cinzel', 'serif'],
+                        sans: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --black: #0a0a0a;
+            --black-2: #121212;
+            --gold: #d4af37;
+            --gold-light: #e8c766;
+            --gold-soft: rgba(212, 175, 55, 0.12);
+            --gold-glow: rgba(212, 175, 55, 0.35);
+            --text: #f5f5f5;
+            --text-muted: #a8a8a8;
+            --text-light: #888888;
+            --border: #2a2a2a;
+            --border-light: #333333;
+            --bg-card: #161616;
+        }
+
+        @property --angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif; 
+            scroll-behavior: smooth;
+            opacity: 0; 
+            transition: opacity 0.3s ease-in-out;
+        }
+        body.loaded {
+            opacity: 1;
+        }
+
+        h1, h2, h3, .font-title { font-family: 'Cinzel', serif; }
+
+        /* =========================================
+           NAV : TRANSITION COULEUR SELON SECTION
+           ========================================= */
+        #main-nav {
+            transition: background-color 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease;
+        }
+
+        #main-nav .nav-link {
+            color: #ffffff;
+            transition: color 0.35s ease;
+        }
+        #main-nav .nav-link:hover {
+            color: var(--gold);
+        }
+
+        #main-nav .nav-logo {
+            transition: filter 0.35s ease, transform 0.3s ease;
+        }
+
+        #main-nav.nav-on-light {
+            background-color: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        #main-nav.nav-on-light .nav-link {
+            color: #1a1a1a;
+        }
+        #main-nav.nav-on-light .nav-link:hover {
+            color: var(--gold);
+        }
+
+        #main-nav.nav-on-light .nav-logo {
+            filter: brightness(0);
+        }
+
+        #main-nav.nav-on-light .menu-btn {
+            --line: hsl(0 0% 10%);
+        }
+
+        #main-nav.nav-on-dark {
+            background-color: transparent;
+            border-bottom: 1px solid transparent;
+        }
+
+        /* =========================================
+           CARTE SERVICE + BORDURE DORÉE
+           ========================================= */
+        .service-card {
+            position: relative;
+            background: var(--bg-card);
+            border-radius: 18px;
+            padding: 32px 28px;
+            overflow: hidden;
+            animation: fadeUp 0.9s ease both;
+        }
+
+        .service-card:nth-child(1) { animation-delay: 0.1s; }
+        .service-card:nth-child(2) { animation-delay: 0.25s; }
+        .service-card:nth-child(3) { animation-delay: 0.4s; }
+        .service-card:nth-child(4) { animation-delay: 0.55s; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 18px;
+            padding: 4px;
+            background: conic-gradient(
+                from var(--angle),
+                transparent 0deg,
+                transparent 60deg,
+                var(--gold) 90deg,
+                var(--gold-light) 120deg,
+                var(--gold) 150deg,
+                transparent 180deg,
+                transparent 360deg
+            );
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            z-index: 2;
+            animation: rotateBorder 4s linear infinite;
+        }
+
+        .service-card:nth-child(even)::before {
+            animation-direction: reverse;
+        }
+
+        .service-card::after {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            background: var(--bg-card);
+            border-radius: 14px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .service-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes rotateBorder {
+            to { --angle: 360deg; }
+        }
+
+        @supports not (background: conic-gradient(from var(--angle), red, blue)) {
+            .service-card::before {
+                animation: none;
+                background: linear-gradient(90deg, transparent, var(--gold), transparent);
+                background-size: 200% 100%;
+                animation: shine 3s linear infinite;
+            }
+            @keyframes shine {
+                0% { background-position: 200% 0; }
+                100% { background-position: -200% 0; }
+            }
+        }
+
+        .service-card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.3px;
+            color: var(--text);
+        }
+
+        .service-card p {
+            color: var(--text-muted);
+            font-size: 0.93rem;
+            line-height: 1.65;
+        }
+
+        /* =========================================
+           LES 6 ANIMATIONS DES ICÔNES (NOS SERVICES)
+           ========================================= */
+        @keyframes flyTakeoff {
+            0% { transform: translateY(0) scale(0); opacity: 0; }
+            50% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        @keyframes ringJoin {
+            0% { transform: translateX(-40px) rotate(-45deg) scale(0); opacity: 0; }
+            100% { transform: translateX(0) rotate(0deg) scale(1); opacity: 1; }
+        }
+
+        @keyframes keyTurn {
+            0% { transform: rotate(0deg) scale(0); opacity: 0; }
+            100% { transform: rotate(360deg) scale(1); opacity: 1; }
+        }
+
+        @keyframes bagPop {
+            0% { transform: scale(0); opacity: 0; }
+            70% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes briefcaseSlide {
+            0% { transform: translateX(40px); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes cameraFlash {
+            0% { transform: scale(0); opacity: 0; filter: brightness(1); }
+            50% { transform: scale(1.2); opacity: 1; filter: brightness(2); }
+            100% { transform: scale(1); opacity: 1; filter: brightness(1); }
+        }
+
+        .service-card.is-visible .main-icon.icon-plane { animation: flyTakeoff 1s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+        .service-card.is-visible .main-icon.icon-ring { animation: ringJoin 1s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+        .service-card.is-visible .main-icon.icon-key { animation: keyTurn 1s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+        .service-card.is-visible .main-icon.icon-bag { animation: bagPop 1s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+        .service-card.is-visible .main-icon.icon-briefcase { animation: briefcaseSlide 1s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+        .service-card.is-visible .main-icon.icon-camera { animation: cameraFlash 1s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+        .service-card:nth-child(1) .main-icon { animation-delay: 0.2s; }
+        .service-card:nth-child(2) .main-icon { animation-delay: 0.35s; }
+        .service-card:nth-child(3) .main-icon { animation-delay: 0.5s; }
+        .service-card:nth-child(4) .main-icon { animation-delay: 0.3s; }
+        .service-card:nth-child(5) .main-icon { animation-delay: 0.45s; }
+        .service-card:nth-child(6) .main-icon { animation-delay: 0.6s; }
+
+        /* =========================================
+           HERO TEXT BOTTOM (Mobile Fix)
+           ========================================= */
+        @media (max-width: 768px) {
+            .hero-text-bottom {
+                padding-bottom: 6rem !important;
+            }
+        }
+
+        /* =========================================
+           LISTE "INCLUS"
+           ========================================= */
+        @keyframes cascadeDrop {
+            0% { opacity: 0; transform: translateY(-40px); }
+            60% { opacity: 1; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .reveal-list-item {
+            opacity: 0;
+            transform: translateY(-40px);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            cursor: default;
+        }
+
+        .list-section.is-visible .reveal-list-item {
+            animation: cascadeDrop 0.8s cubic-bezier(0.25, 1, 0.5, 1.2) forwards;
+        }
+        .list-section.is-visible .reveal-list-item:nth-child(1) { animation-delay: 0.1s; }
+        .list-section.is-visible .reveal-list-item:nth-child(2) { animation-delay: 0.2s; }
+        .list-section.is-visible .reveal-list-item:nth-child(3) { animation-delay: 0.3s; }
+        .list-section.is-visible .reveal-list-item:nth-child(4) { animation-delay: 0.4s; }
+        .list-section.is-visible .reveal-list-item:nth-child(5) { animation-delay: 0.5s; }
+        .list-section.is-visible .reveal-list-item:nth-child(6) { animation-delay: 0.6s; }
+
+        .reveal-list-item:hover, .reveal-list-item:active {
+            background-color: rgba(255, 255, 255, 0.03);
+            transform: translateY(-3px);
+        }
+        
+        .list-icon { transition: transform 0.4s ease, color 0.4s ease; }
+        
+        .reveal-list-item:hover .list-icon, .reveal-list-item:active .list-icon {
+            transform: rotate(360deg) scale(1.1);
+            color: #cbb07c;
+        }
+
+        @media (max-width: 768px) {
+            .list-section.is-visible .list-icon {
+                transform: rotate(360deg) scale(1.1);
+                color: #cbb07c;
+                transition: transform 0.4s ease, color 0.4s ease;
+            }
+        }
+
+        /* =========================================
+           CORRECTION VIDÉO MOBILE
+           ========================================= */
+        @media (max-width: 768px) {
+            .video-section-mobile {
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                overflow: hidden;
+                background-color: #000 !important;
+            }
+            
+            .video-section-mobile .container {
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+                background-color: #000 !important;
+            }
+
+            .video-full-mobile {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border-radius: 0 !important;
+                border: none !important;
+                box-shadow: none !important;
+                display: block;
+                background-color: #000 !important;
+            }
+            
+            .video-full-mobile video {
+                width: 100% !important;
+                height: auto !important;
+                aspect-ratio: 16 / 9;
+                object-fit: cover !important; 
+                border-radius: 0 !important;
+                display: block;
+                background-color: #000 !important;
+            }
+        }
+
+        /* =========================================
+           BOUTON MENU ANIMÉ
+           ========================================= */
+        .menu-btn {
+            --size: 32px;
+            --step: 0.2s;
+            --line: hsl(0 0% 100%);
+            outline-color: var(--line);
+            background: transparent;
+            height: var(--size);
+            aspect-ratio: 1;
+            padding: calc(var(--size) * 0.1);
+            border-radius: calc(var(--size) * 0.1);
+            border: none;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: transform var(--step) var(--ease-elastic-5), background var(--step);
+            transform: translateY(var(--elevate, 0)) scale(var(--scale, 1));
+        }
+        .menu-btn:hover { background: hsla(0, 0%, 100%, 0.1); }
+        .menu-btn:active { --elevate: 5%; --scale: 0.9; }
+        .menu-btn span {
+            flex: 1;
+            width: 100%;
+            background: linear-gradient(transparent 0 35%, var(--line) 35% 65%, transparent 65%);
+            translate: var(--x, 0) var(--y, 0);
+            rotate: var(--rotate, 0deg);
+            transition-property: translate, rotate;
+            transition-duration: var(--step);
+            transition-delay: calc(var(--step) * var(--translate-index, 0)), calc(var(--step) * var(--rotate-index, 0));
+            transition-timing-function: cubic-bezier(.5, 1.75, .75, 1.25);
+        }
+        [aria-pressed="true"] span:nth-of-type(1) { --y: 100%; --rotate: 45deg; }
+        [aria-pressed="true"] span:nth-of-type(2) { --x: 200%; }
+        [aria-pressed="true"] span:nth-of-type(3) { --y: -100%; --rotate: -45deg; }
+        [aria-pressed="true"] span:nth-of-type(2) { --translate-index: 0; }
+        [aria-pressed="true"] span:is(:nth-of-type(1), :nth-of-type(3)) { --translate-index: 1.5; --rotate-index: 2.5; }
+        [aria-pressed="true"], [aria-pressed="true"]:is(:hover, :active) { --elevate: 5%; --scale: 0.9; }
+
+        #mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out, opacity 0.3s ease;
+            opacity: 0;
+        }
+        #mobile-menu.open {
+            max-height: 400px;
+            opacity: 1;
+        }
+
+        .video-fade-in { animation: videoFadeIn 0.8s ease-in forwards; }
+        @keyframes videoFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* =========================================
+           ANIMATION DU FOOTER : LA VOITURE
+           ========================================= */
+        .footer-car-container {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            width: 100%;
+            height: 40px; 
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 50;
+        }
+
+        .footer-car {
+            position: absolute;
+            top: 50%;
+            left: -200px;
+            transform: translateY(-50%);
+            width: 160px;
+            height: auto;
+            opacity: 0;
+        }
+
+        .footer-car svg {
+            width: 100%;
+            height: auto;
+            fill: var(--gold);
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.8));
+            transform: scaleX(-1);
+        }
+
+        .footer-car::after {
+            content: '';
+            position: absolute;
+            top: 60%;
+            right: 100%;
+            width: 150px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.6));
+            transform: translateY(-50%);
+            border-radius: 2px;
+        }
+
+        .footer-animate .footer-car {
+            animation: driveCar 7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes driveCar {
+            0% { left: -200px; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { left: 110%; opacity: 0; }
+        }
+
+        /* =========================================
+           MINI-JEU : EN ATTENDANT D'ARRIVER
+           ========================================= */
+        #game-section {
+            background: radial-gradient(ellipse at top, #1a1a1a 0%, #0a0a0a 60%);
+        }
+
+        #game-stage {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 7;
+            max-height: 380px;
+            border-radius: 14px;
+            overflow: hidden;
+            background: linear-gradient(180deg, #0d0d0d 0%, #161616 100%);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.6), inset 0 0 60px rgba(212, 175, 55, 0.05);
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+
+        #game-stage::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 22%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.7), transparent);
+            z-index: 1;
+        }
+        #game-stage::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 22%;
+            background: linear-gradient(180deg, rgba(212, 175, 55, 0.06), rgba(212, 175, 55, 0.02));
+            z-index: 0;
+        }
+
+        #player-car {
+            position: absolute;
+            left: 8%;
+            width: 130px;
+            max-width: 22%;
+            bottom: 22%;
+            transform-origin: bottom center;
+            z-index: 3;
+            filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.5));
+            transition: filter 0.2s ease;
+            will-change: transform, left;
+        }
+
+        #player-car svg {
+            width: 100%;
+            height: auto;
+            fill: var(--gold);
+            transform: scaleX(-1);
+        }
+
+        #player-car.is-jumping {
+            filter: drop-shadow(0 0 20px rgba(232, 199, 102, 0.9));
+        }
+
+        .obstacle {
+            position: absolute;
+            bottom: 22%;
+            width: 32px;
+            height: 32px;
+            z-index: 2;
+            pointer-events: none;
+            will-change: left;
+        }
+        .obstacle svg {
+            width: 100%;
+            height: 100%;
+            fill: #c0392b;
+            filter: drop-shadow(0 0 6px rgba(192, 57, 43, 0.6));
+        }
+
+        #game-hud {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            z-index: 5;
+            text-align: right;
+            font-family: 'Cinzel', serif;
+            pointer-events: none;
+        }
+        #game-score {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gold-light);
+            line-height: 1;
+            text-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
+        }
+        #game-best {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-top: 4px;
+        }
+
+        #game-speed {
+            position: absolute;
+            top: 16px;
+            left: 18px;
+            z-index: 5;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.45);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            pointer-events: none;
+        }
+
+        .game-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            padding: 20px;
+            text-align: center;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .game-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .game-overlay .game-btn {
+            position: relative;
+            z-index: 11;
+            pointer-events: auto;
+            touch-action: manipulation;
+        }
+
+        .game-overlay h3 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-light);
+            font-size: 22px;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+        .game-overlay p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            font-weight: 300;
+            max-width: 340px;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .game-btn {
+            background: var(--gold);
+            color: #0a0a0a;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-weight: 700;
+            padding: 12px 28px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.25s ease, transform 0.15s ease;
+        }
+        .game-btn:hover {
+            background: var(--gold-light);
+            transform: translateY(-1px);
+        }
+        .game-btn:active {
+            transform: scale(0.97);
+        }
+
+        #game-final-score {
+            font-family: 'Cinzel', serif;
+            font-size: 44px;
+            color: var(--gold-light);
+            line-height: 1;
+            margin: 4px 0 6px;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        #game-record-badge {
+            display: inline-block;
+            margin-top: 6px;
+            font-size: 10px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #0a0a0a;
+            background: var(--gold-light);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+        }
+        #game-record-badge.hidden { display: none; }
+
+        /* =========================================
+           ADAPTATION MOBILE DU JEU
+           ========================================= */
+        @media (max-width: 768px) {
+            #game-stage {
+                aspect-ratio: 4 / 3;
+                max-height: 320px;
+            }
+            #player-car {
+                width: 90px;
+                max-width: 30%;
+            }
+            .obstacle {
+                width: 22px;
+                height: 22px;
+            }
+            #game-score { font-size: 22px; }
+            .game-overlay h3 { font-size: 18px; }
+            .game-overlay p { font-size: 12px; }
+            #game-final-score { font-size: 36px; }
+        }
+
+        /* =========================================
+           CARROUSEL D'AVIS (MARQUEE)
+           ========================================= */
+        .marquee-container {
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+        }
+
+        /* Dégradé de fondu sur les bords */
+        .marquee-container::before,
+        .marquee-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 40px; /* Largeur du fondu */
+            z-index: 10;
+            pointer-events: none;
+        }
+        .marquee-container::before {
+            left: 0;
+            background: linear-gradient(to right, #f9f9f9, transparent);
+        }
+        .marquee-container::after {
+            right: 0;
+            background: linear-gradient(to left, #f9f9f9, transparent);
+        }
+
+        .marquee-track {
+            display: flex;
+            width: max-content;
+            gap: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .marquee-track:hover {
+            animation-play-state: paused;
+        }
+
+        /* Ligne 1 : Défile vers la gauche */
+        .marquee-track-left {
+            animation: scrollLeft 40s linear infinite;
+        }
+        @keyframes scrollLeft {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Ligne 2 : Défile vers la droite */
+        .marquee-track-right {
+            animation: scrollRight 40s linear infinite;
+        }
+        @keyframes scrollRight {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0); }
+        }
+
+        /* Masquer la 2ème ligne sur mobile */
+        .marquee-row-2 {
+            display: none;
+        }
+        @media (min-width: 768px) {
+            .marquee-row-2 {
+                display: block;
+            }
+            .marquee-container::before { width: 80px; }
+            .marquee-container::after { width: 80px; }
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800 antialiased selection:bg-gold selection:text-white">
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/33651889935" target="_blank" aria-label="Contact WhatsApp" class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300">
+        <i class="fa-brands fa-whatsapp text-3xl"></i>
+    </a>
+
+    <!-- Header / Hero Section -->
+    <header class="relative min-h-[100svh] flex flex-col justify-between bg-dark text-white overflow-hidden" data-nav="dark">
+        <div class="absolute inset-0 z-0">
+            <video 
+                id="hero-video"
+                src="https://www.image2url.com/r2/default/videos/1792758593803-96d5c4f4-aa29-44ea-8af8-6ae89055544d.mp4" 
+                autoplay loop muted playsinline preload="auto"
+                class="w-full h-full object-cover object-center opacity-0 video-fade-in">
+            </video>
+            <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/80 pointer-events-none"></div>
+        </div>
+
+        <!-- NAV -->
+        <nav id="main-nav" class="nav-on-dark fixed top-0 left-0 w-full z-50">
+            <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+                <button id="mobile-menu-btn" aria-pressed="false" aria-label="Menu" class="menu-btn md:hidden">
+                    <span class="sr-only">Menu</span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </button>
+
+                <div class="hidden md:flex items-center space-x-8 text-xs uppercase tracking-widest font-medium">
+                    <a href="#" class="nav-link">Accueil</a>
+                    <a href="#services" class="nav-link">Nos Services</a>
+                    <a href="#tarifs" class="nav-link">Forfaits</a>
+                    <a href="#inclus" class="nav-link">Garanties</a>
+                    <a href="#chauffeur" class="nav-link">À Propos</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                </div>
+
+                <a href="#" aria-label="Retour à l'accueil Drive'OR" class="flex items-center transition-transform duration-300 hover:scale-105">
+                    <img src="https://i.ibb.co/QR5vjKC/logo-fond-noir-removebg-preview-2.png" alt="Logo Drive'OR" class="nav-logo h-10 md:h-16 w-auto object-contain">
+                </a>
+            </div>
+        </nav>
+
+        <!-- Menu Mobile -->
+        <div id="mobile-menu" class="absolute top-16 left-0 w-full bg-[#111111]/95 backdrop-blur-md z-30 md:hidden border-b border-gray-800">
+            <div class="flex flex-col items-center py-6 space-y-4 text-sm uppercase tracking-widest font-medium">
+                <a href="#" class="hover:text-gold transition w-full text-center py-2">Accueil</a>
+                <a href="#services" class="hover:text-gold transition w-full text-center py-2">Nos Services</a>
+                <a href="#tarifs" class="hover:text-gold transition w-full text-center py-2">Forfaits</a>
+                <a href="#inclus" class="hover:text-gold transition w-full text-center py-2">Garanties</a>
+                <a href="#chauffeur" class="hover:text-gold transition w-full text-center py-2">À Propos</a>
+                <a href="#contact" class="hover:text-gold transition w-full text-center py-2">Contact</a>
+            </div>
+        </div>
+
+        <!-- Hero Content -->
+        <div class="relative z-10 container mx-auto px-4 flex-grow flex flex-col items-center justify-end text-center pb-16 md:pb-24 pt-20 hero-text-bottom">
+            <h1 class="text-3xl md:text-5xl lg:text-6xl font-normal tracking-wider uppercase leading-snug mb-6 max-w-3xl drop-shadow-md">
+                Un chauffeur<br>à votre disposition
+            </h1>
+            <a href="tel:+33612345678" class="bg-gold hover:bg-gold-dark text-white text-xs md:text-sm uppercase tracking-[0.2em] font-semibold py-4 px-8 md:px-10 rounded-sm shadow-md transition duration-300 mb-4">
+                Devis gratuit & Réservation
+            </a>
+            <p class="text-sm md:text-base text-white font-bold tracking-wide drop-shadow-md">
+                Service avec chauffeur dans toute la France
+            </p>
+        </div>
+    </header>
+
+    <!-- Section 1: NOS SERVICES -->
+    <section id="services" class="pt-12 pb-4 md:pt-16 md:pb-4 px-4 container mx-auto max-w-6xl" data-nav="light">
+        <div class="text-center max-w-3xl mx-auto mb-10 md:mb-16">
+            <p class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-gold font-semibold mb-2">
+                Chauffeur privé VTC à Poitiers
+            </p>
+            <h2 class="text-2xl md:text-3xl font-normal uppercase tracking-widest text-gray-900 mb-4 md:mb-6">
+                Nos Services
+            </h2>
+            <p class="text-sm md:text-base text-black leading-relaxed">
+                Je suis un chauffeur indépendant et je mets à votre disposition mon véhicule haut de gamme récent.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            
+            <div class="service-card">
+                <i class="bg-icon fa-solid fa-plane absolute -right-4 -bottom-4 text-8xl text-white/5 pointer-events-none"></i>
+                <div class="relative z-10">
+                    <div class="text-gold mb-4"><i class="main-icon icon-plane fa-solid fa-plane text-2xl"></i></div>
+                    <h3>Transfert hubs</h3>
+                    <p>Prise en charge vers tous les aéroports et gares en France</p>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <i class="bg-icon fa-solid fa-ring absolute -right-4 -bottom-4 text-8xl text-white/5 pointer-events-none"></i>
+                <div class="relative z-10">
+                    <div class="text-gold mb-4"><i class="main-icon icon-ring fa-solid fa-ring text-2xl"></i></div>
+                    <h3>Mariage & Événements</h3>
+                    <p>Un service élégant pour sublimer tous vos moments inoubliables</p>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <i class="bg-icon fa-solid fa-key absolute -right-4 -bottom-4 text-8xl text-white/5 pointer-events-none"></i>
+                <div class="relative z-10">
+                    <div class="text-gold mb-4"><i class="main-icon icon-key fa-solid fa-key text-2xl"></i></div>
+                    <h3>Mise à Disposition</h3>
+                    <p>Votre chauffeur privé à la journée pour tous vos rendez-vous</p>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <i class="bg-icon fa-solid fa-bag-shopping absolute -right-4 -bottom-4 text-8xl text-white/5 pointer-events-none"></i>
+                <div class="relative z-10">
+                    <div class="text-gold mb-4"><i class="main-icon icon-bag fa-solid fa-bag-shopping text-2xl"></i></div>
+                    <h3>Shopping & Loisirs</h3>
+                    <p>Laissez-vous conduire aux boutiques et profitez sans le stress</p>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <i class="bg-icon fa-solid fa-briefcase absolute -right-4 -bottom-4 text-8xl text-white/5 pointer-events-none"></i>
+                <div class="relative z-10">
+                    <div class="text-gold mb-4"><i class="main-icon icon-briefcase fa-solid fa-briefcase text-2xl"></i></div>
+                    <h3>Déplacements Pro</h3>
+                    <p>Gagnez un temps précieux et travaillez pendant vos trajets pros</p>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <i class="bg-icon fa-solid fa-camera absolute -right-4 -bottom-4 text-8xl text-white/5 pointer-events-none"></i>
+                <div class="relative z-10">
+                    <div class="text-gold mb-4"><i class="main-icon icon-camera fa-solid fa-camera text-2xl"></i></div>
+                    <h3>Excursion & Tourisme</h3>
+                    <p>Explorez la région et ses trésors avec un guide à votre écoute</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-16 mb-12 text-center">
+            <a href="tel:+33612345678" class="inline-block bg-gold hover:bg-gold-dark text-white text-xs md:text-sm uppercase tracking-[0.2em] font-semibold py-4 px-8 md:px-10 rounded-sm shadow-md transition duration-300">
+                Devis gratuit & Réservation
+            </a>
+        </div>
+    </section>
+
+    <!-- VIDÉO -->
+    <section class="pt-0 pb-12 md:pt-0 md:pb-20 bg-white video-section-mobile" data-nav="dark">
+        <div class="container mx-auto max-w-5xl px-4 md:px-4">
+            <div class="relative w-full rounded-sm overflow-hidden shadow-2xl border border-gray-200 video-full-mobile">
+                <video 
+                    src="https://videotourl.com/videos/1792774302767-24cbf248-18ec-478d-9ff1-d05e81ee780a.mov" 
+                    autoplay 
+                    loop 
+                    muted 
+                    playsinline 
+                    class="w-full h-auto object-cover aspect-video">
+                </video>
+                <div class="absolute inset-0 bg-black/10 pointer-events-none"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- INCLUS -->
+    <section id="inclus" class="list-section bg-[#0f0f0f] py-12 md:py-24 px-4 text-white" data-nav="dark">
+        <div class="container mx-auto max-w-4xl">
+            
+            <div class="text-center mb-10 md:mb-16">
+                <p class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-gold font-semibold mb-2">
+                    L'excellence à chaque trajet
+                </p>
+                <h2 class="font-title text-2xl md:text-4xl font-normal tracking-widest mb-4">
+                    Inclus dans chaque prestation
+                </h2>
+                <p class="text-gray-400 font-light max-w-2xl mx-auto text-sm">
+                    Parce que le haut de gamme se joue dans les détails, voici ce que vous retrouverez systématiquement à bord de nos véhicules.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-0">
+                
+                <div class="reveal-list-item flex items-center py-4 md:py-5 border-b border-white/10">
+                    <div class="list-icon w-10 h-10 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-white/5 text-gold mr-4 md:mr-5">
+                        <i class="fa-solid fa-user-tie text-base md:text-lg"></i>
+                    </div>
+                    <p class="text-sm md:text-base font-light tracking-wide text-gray-200">Chauffeur professionnel bilingue</p>
+                </div>
+
+                <div class="reveal-list-item flex items-center py-4 md:py-5 border-b border-white/10">
+                    <div class="list-icon w-10 h-10 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-white/5 text-gold mr-4 md:mr-5">
+                        <i class="fa-solid fa-wifi text-base md:text-lg"></i>
+                    </div>
+                    <p class="text-sm md:text-base font-light tracking-wide text-gray-200">Wi-Fi, chargeurs USB, eau fraîche</p>
+                </div>
+
+                <div class="reveal-list-item flex items-center py-4 md:py-5 border-b border-white/10">
+                    <div class="list-icon w-10 h-10 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-white/5 text-gold mr-4 md:mr-5">
+                        <i class="fa-solid fa-location-dot text-base md:text-lg"></i>
+                    </div>
+                    <p class="text-sm md:text-base font-light tracking-wide text-gray-200">Prise en charge à l'adresse de votre choix</p>
+                </div>
+
+                <div class="reveal-list-item flex items-center py-4 md:py-5 border-b border-white/10">
+                    <div class="list-icon w-10 h-10 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-white/5 text-gold mr-4 md:mr-5">
+                        <i class="fa-solid fa-route text-base md:text-lg"></i>
+                    </div>
+                    <p class="text-sm md:text-base font-light tracking-wide text-gray-200">Flexibilité totale sur l'itinéraire</p>
+                </div>
+
+                <div class="reveal-list-item flex items-center py-4 md:py-5 border-b border-white/10">
+                    <div class="list-icon w-10 h-10 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-white/5 text-gold mr-4 md:mr-5">
+                        <i class="fa-solid fa-car-side text-base md:text-lg"></i>
+                    </div>
+                    <p class="text-sm md:text-base font-light tracking-wide text-gray-200">Véhicules récents et confortables</p>
+                </div>
+
+                <div class="reveal-list-item flex items-center py-4 md:py-5 border-b border-white/10">
+                    <div class="list-icon w-10 h-10 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-white/5 text-gold mr-4 md:mr-5">
+                        <i class="fa-solid fa-money-bill-wave text-base md:text-lg"></i>
+                    </div>
+                    <p class="text-sm md:text-base font-light tracking-wide text-gray-200">Frais de péage et parking inclus</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- QUI SUIS-JE -->
+    <section id="chauffeur" class="py-16 md:py-24 px-4 bg-white container mx-auto max-w-6xl" data-nav="light">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
+            
+            <div class="relative">
+                <div class="absolute inset-0 border-2 border-gold transform translate-x-3 translate-y-3 md:translate-x-4 md:translate-y-4"></div>
+                <div class="relative aspect-[4/5] bg-gray-200 overflow-hidden">
+                    <img src="https://i.ibb.co/nNf1J05F/DSC01997-scaled.jpg" alt="Le chauffeur Drive'OR" class="w-full h-full object-cover">
+                </div>
+            </div>
+
+            <div class="text-left">
+                <p class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-gold font-semibold mb-3">
+                    Derrière le volant
+                </p>
+                <h2 class="text-3xl md:text-4xl font-normal uppercase tracking-widest text-gray-900 mb-6">
+                    Qui suis-je ?
+                </h2>
+                <div class="space-y-4 text-sm md:text-base text-gray-600 font-light leading-relaxed">
+                    <p>
+                        Passionné par l'automobile et le service depuis toujours, j'ai fait le choix de devenir chauffeur indépendant pour offrir un service véritablement sur-mesure. Loin des standards des grandes plateformes, je crois que chaque trajet mérite une attention particulière.
+                    </p>
+                    <p>
+                        Au volant de mon véhicule récent, je m'engage à vous offrir une expérience paisible, discrète et ponctuelle. Que vous soyez un habitué des déplacements professionnels ou que vous prépariez un événement spécial, je mets mon expérience à votre service.
+                    </p>
+                    <p class="font-medium text-gray-900 italic">
+                        "Mon objectif est simple : que vous n'ayez à vous soucier de rien d'autre que de votre destination."
+                    </p>
+                </div>
+                
+                <div class="mt-8 flex items-center space-x-4">
+                    <div class="w-12 h-[1px] bg-gold"></div>
+                    <span class="font-title text-lg text-gold">Votre chauffeur Drive'OR</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- NOUVELLE SECTION : AVIS CLIENTS (CARROUSEL INFINI) -->
+    <section class="py-16 md:py-20 bg-[#f9f9f9] border-y border-gray-200 overflow-hidden" data-nav="light">
+        <div class="container mx-auto px-4 text-center mb-10">
+            <p class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-gold font-semibold mb-4">
+                La confiance de nos passagers
+            </p>
+            <div class="flex items-center justify-center space-x-3">
+                <span class="text-4xl font-title font-bold text-gray-900">4.9</span>
+                <div class="flex text-gold text-xl">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star-half-stroke"></i>
+                </div>
+                <span class="text-sm text-gray-500 font-light">(Basé sur 48 avis Google)</span>
+            </div>
+        </div>
+
+        <!-- Ligne 1 : Défile vers la gauche -->
+        <div class="marquee-container">
+            <div class="marquee-track marquee-track-left">
+                <!-- Avis 1 -->
+                <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                    <div class="flex text-gold text-xs mb-3">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-sm text-gray-600 font-light italic mb-4">"Un service impeccable pour mon transfert vers l'aéroport. Ponctuel, voiture d'une propreté irréprochable et chauffeur très courtois. Je recommande vivement."</p>
+                    <p class="text-xs font-bold text-gray-900">— Sophie M.</p>
+                </div>
+                <!-- Avis 2 -->
+                <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                    <div class="flex text-gold text-xs mb-3">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-sm text-gray-600 font-light italic mb-4">"Nous avons réservé Driv'Or pour notre mariage. Le chauffeur a été d'une discrétion et d'une élégance parfaite. Merci pour ce moment."</p>
+                    <p class="text-xs font-bold text-gray-900">— Thomas & Julie</p>
+                </div>
+                <!-- Avis 3 -->
+                <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                    <div class="flex text-gold text-xs mb-3">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-sm text-gray-600 font-light italic mb-4">"Déplacements professionnels réguliers sur Poitiers. Toujours à l'heure, Wi-Fi à bord, je peux travailler sereinement. Un vrai partenaire."</p>
+                    <p class="text-xs font-bold text-gray-900">— Marc L.</p>
+                </div>
+                <!-- Avis 4 -->
+                <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                    <div class="flex text-gold text-xs mb-3">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-sm text-gray-600 font-light italic mb-4">"Très belle expérience pour notre excursion au Futuroscope. Le chauffeur connaissait parfaitement les lieux et a été de très bon conseil."</p>
+                    <p class="text-xs font-bold text-gray-900">— Claire D.</p>
+                </div>
+                <!-- Avis 5 -->
+                <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                    <div class="flex text-gold text-xs mb-3">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-sm text-gray-600 font-light italic mb-4">"Suite à un retard de train, le chauffeur a su s'adapter et m'attendre. Service client au top, je ne peux que recommander."</p>
+                    <p class="text-xs font-bold text-gray-900">— Antoine R.</p>
+                </div>
+                <!-- Duplication pour l'effet infini -->
+                <!-- Avis 1 -->
+                <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                    <div class="flex text-gold text-xs mb-3">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-sm text-gray-600 font-light italic mb-4">"Un service impeccable pour mon transfert vers l'aéroport. Ponctuel, voiture d'une propreté irréprochable et chauffeur très courtois. Je recommande vivement."</p>
+                    <p class="text-xs font-bold text-gray-900">— Sophie M.</p>
+                </div>
+                <!-- Avis 2 -->
+                <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                    <div class="flex text-gold text-xs mb-3">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-sm text-gray-600 font-light italic mb-4">"Nous avons réservé Driv'Or pour notre mariage. Le chauffeur a été d'une discrétion et d'une élégance parfaite. Merci pour ce moment."</p>
+                    <p class="text-xs font-bold text-gray-900">— Thomas & Julie</p>
+                </div>
+                <!-- Avis 3 -->
+                <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                    <div class="flex text-gold text-xs mb-3">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-sm text-gray-600 font-light italic mb-4">"Déplacements professionnels réguliers sur Poitiers. Toujours à l'heure, Wi-Fi à bord, je peux travailler sereinement. Un vrai partenaire."</p>
+                    <p class="text-xs font-bold text-gray-900">— Marc L.</p>
+                </div>
+                <!-- Avis 4 -->
+                <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                    <div class="flex text-gold text-xs mb-3">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-sm text-gray-600 font-light italic mb-4">"Très belle expérience pour notre excursion au Futuroscope. Le chauffeur connaissait parfaitement les lieux et a été de très bon conseil."</p>
+                    <p class="text-xs font-bold text-gray-900">— Claire D.</p>
+                </div>
+                <!-- Avis 5 -->
+                <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                    <div class="flex text-gold text-xs mb-3">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-sm text-gray-600 font-light italic mb-4">"Suite à un retard de train, le chauffeur a su s'adapter et m'attendre. Service client au top, je ne peux que recommander."</p>
+                    <p class="text-xs font-bold text-gray-900">— Antoine R.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ligne 2 : Défile vers la droite (uniquement sur PC) -->
+        <div class="marquee-row-2 mt-2">
+            <div class="marquee-container">
+                <div class="marquee-track marquee-track-right">
+                    <!-- Avis 6 -->
+                    <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                        <div class="flex text-gold text-xs mb-3">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-sm text-gray-600 font-light italic mb-4">"Une soirée parfaite grâce à vous. Voiture magnifique, chauffeur en costume, ponctualité irréprochable. Merci encore."</p>
+                        <p class="text-xs font-bold text-gray-900">— Émilie V.</p>
+                    </div>
+                    <!-- Avis 7 -->
+                    <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                        <div class="flex text-gold text-xs mb-3">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-sm text-gray-600 font-light italic mb-4">"Je prends régulièrement ce chauffeur pour mes rendez-vous à Paris. Le Wi-Fi à bord est un vrai plus pour avancer sur mes dossiers."</p>
+                        <p class="text-xs font-bold text-gray-900">— Julien P.</p>
+                    </div>
+                    <!-- Avis 8 -->
+                    <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                        <div class="flex text-gold text-xs mb-3">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-sm text-gray-600 font-light italic mb-4">"Chauffeur très agréable, voiture spacieuse et confortable. Nous avons passé un excellent moment lors de notre excursion."</p>
+                        <p class="text-xs font-bold text-gray-900">— Famille L.</p>
+                    </div>
+                    <!-- Avis 9 -->
+                    <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                        <div class="flex text-gold text-xs mb-3">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-sm text-gray-600 font-light italic mb-4">"Un grand merci pour votre patience et votre professionnalisme. Malgré les bouchons, nous étions à l'heure à la gare. Je recommande à 100%."</p>
+                        <p class="text-xs font-bold text-gray-900">— Léa B.</p>
+                    </div>
+                    <!-- Avis 10 -->
+                    <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                        <div class="flex text-gold text-xs mb-3">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-sm text-gray-600 font-light italic mb-4">"Prise en charge à l'aéroport impeccable. Une bouteille d'eau fraîche nous attendait dans la voiture. Les détails font la différence."</p>
+                        <p class="text-xs font-bold text-gray-900">— Pierre G.</p>
+                    </div>
+                    <!-- Duplication pour l'effet infini -->
+                    <!-- Avis 6 -->
+                    <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                        <div class="flex text-gold text-xs mb-3">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-sm text-gray-600 font-light italic mb-4">"Une soirée parfaite grâce à vous. Voiture magnifique, chauffeur en costume, ponctualité irréprochable. Merci encore."</p>
+                        <p class="text-xs font-bold text-gray-900">— Émilie V.</p>
+                    </div>
+                    <!-- Avis 7 -->
+                    <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                        <div class="flex text-gold text-xs mb-3">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-sm text-gray-600 font-light italic mb-4">"Je prends régulièrement ce chauffeur pour mes rendez-vous à Paris. Le Wi-Fi à bord est un vrai plus pour avancer sur mes dossiers."</p>
+                        <p class="text-xs font-bold text-gray-900">— Julien P.</p>
+                    </div>
+                    <!-- Avis 8 -->
+                    <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                        <div class="flex text-gold text-xs mb-3">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-sm text-gray-600 font-light italic mb-4">"Chauffeur très agréable, voiture spacieuse et confortable. Nous avons passé un excellent moment lors de notre excursion."</p>
+                        <p class="text-xs font-bold text-gray-900">— Famille L.</p>
+                    </div>
+                    <!-- Avis 9 -->
+                    <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                        <div class="flex text-gold text-xs mb-3">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-sm text-gray-600 font-light italic mb-4">"Un grand merci pour votre patience et votre professionnalisme. Malgré les bouchons, nous étions à l'heure à la gare. Je recommande à 100%."</p>
+                        <p class="text-xs font-bold text-gray-900">— Léa B.</p>
+                    </div>
+                    <!-- Avis 10 -->
+                    <div class="bg-white w-[300px] md:w-[350px] flex-shrink-0 p-6 rounded-sm shadow-sm border border-gray-100 text-left">
+                        <div class="flex text-gold text-xs mb-3">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-sm text-gray-600 font-light italic mb-4">"Prise en charge à l'aéroport impeccable. Une bouteille d'eau fraîche nous attendait dans la voiture. Les détails font la différence."</p>
+                        <p class="text-xs font-bold text-gray-900">— Pierre G.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NOUVELLE SECTION : TARIFS / FORFAITS -->
+    <section id="tarifs" class="py-16 md:py-24 px-4 bg-white" data-nav="light">
+        <div class="container mx-auto max-w-5xl">
+            <div class="text-center mb-12">
+                <p class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-gold font-semibold mb-2">
+                    Transparence
+                </p>
+                <h2 class="text-2xl md:text-3xl font-normal uppercase tracking-widest text-gray-900">
+                    Forfaits indicatifs
+                </h2>
+                <p class="text-sm text-gray-500 font-light mt-4">Tarifs fixes depuis le centre de Poitiers. Devis personnalisé pour toutes autres destinations.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Forfait 1 -->
+                <div class="border border-gray-200 p-8 text-center hover:border-gold transition-colors duration-300 relative group">
+                    <h3 class="font-title text-xl text-gray-900 mb-2">Gare de Poitiers</h3>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-6">Centre-ville ↔ Gare</p>
+                    <div class="text-3xl font-bold text-gray-900 mb-6"><span class="text-sm text-gray-500 font-normal">à partir de</span> 15€</div>
+                    <a href="tel:+33612345678" class="inline-block w-full py-3 border border-gray-300 text-xs uppercase tracking-widest font-semibold text-gray-700 group-hover:bg-gold group-hover:text-white group-hover:border-gold transition-all duration-300">Réserver</a>
+                </div>
+                
+                <!-- Forfait 2 -->
+                <div class="border border-gold p-8 text-center relative group shadow-lg">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gold text-white text-[10px] uppercase tracking-widest py-1 px-3 font-bold">Populaire</div>
+                    <h3 class="font-title text-xl text-gray-900 mb-2">Aéroport</h3>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-6">Poitiers ↔ Aéroport</p>
+                    <div class="text-3xl font-bold text-gray-900 mb-6"><span class="text-sm text-gray-500 font-normal">à partir de</span> 35€</div>
+                    <a href="tel:+33612345678" class="inline-block w-full py-3 bg-gold text-white text-xs uppercase tracking-widest font-semibold hover:bg-gold-dark transition-all duration-300">Réserver</a>
+                </div>
+                
+                <!-- Forfait 3 -->
+                <div class="border border-gray-200 p-8 text-center hover:border-gold transition-colors duration-300 relative group">
+                    <h3 class="font-title text-xl text-gray-900 mb-2">Futuroscope</h3>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-6">Poitiers ↔ Futuroscope</p>
+                    <div class="text-3xl font-bold text-gray-900 mb-6"><span class="text-sm text-gray-500 font-normal">à partir de</span> 25€</div>
+                    <a href="tel:+33612345678" class="inline-block w-full py-3 border border-gray-300 text-xs uppercase tracking-widest font-semibold text-gray-700 group-hover:bg-gold group-hover:text-white group-hover:border-gold transition-all duration-300">Réserver</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="py-16 md:py-24 px-4 bg-[#f9f9f9]" data-nav="light">
+        <div class="container mx-auto max-w-6xl">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 bg-white shadow-xl rounded-sm overflow-hidden">
+                
+                <div class="lg:col-span-2 bg-[#0f0f0f] p-8 md:p-12 text-white flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-64 h-64 bg-gold/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+                    
+                    <div class="relative z-10">
+                        <h3 class="font-title text-2xl mb-4 text-gold">Discutons de votre trajet</h3>
+                        <p class="text-gray-400 text-sm font-light leading-relaxed mb-8">
+                            Une question, une demande de devis spécifique ou une réservation de dernière minute ? N'hésitez pas à me contacter directement, je vous répondrai dans les plus brefs délais.
+                        </p>
+
+                        <div class="space-y-6">
+                            <a href="tel:+33612345678" class="flex items-center group">
+                                <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-gold mr-4 group-hover:bg-gold group-hover:text-black transition-colors duration-300">
+                                    <i class="fa-solid fa-phone"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase tracking-widest">Téléphone</p>
+                                    <p class="font-bold text-lg">06 51 88 99 35</p>
+                                </div>
+                            </a>
+                            
+                            <div class="flex items-center group">
+                                <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-gold mr-4">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase tracking-widest">Email</p>
+                                    <p class="font-medium">contact@drivor.fr</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center group">
+                                <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-gold mr-4">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase tracking-widest">Zone d'intervention</p>
+                                    <p class="font-medium">Poitiers & Nouvelle Aquitaine</p>
+                                    <p class="text-xs text-gray-400 mt-1">Gare, Aéroport, Futuroscope, CHU...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative z-10 mt-12 pt-6 border-t border-white/10">
+                        <p class="text-xs text-gray-500">Disponible 7j/7 de 05h00 à 23h00.</p>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-3 p-8 md:p-12">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">Demande de devis gratuit</h3>
+                    
+                    <!-- Le formulaire a maintenant un ID -->
+                    <form id="contact-form" action="https://formspree.io/f/xkjjgwvp" method="POST" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="nom" class="block text-xs font-medium text-gray-700 uppercase tracking-wider mb-2">Nom complet</label>
+                                <input type="text" name="nom" id="nom" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-sm focus:ring-gold focus:border-gold block w-full p-3 outline-none transition" placeholder="Jean Dupont" required>
+                            </div>
+                            <div>
+                                <label for="telephone" class="block text-xs font-medium text-gray-700 uppercase tracking-wider mb-2">Téléphone</label>
+                                <input type="tel" name="telephone" id="telephone" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-sm focus:ring-gold focus:border-gold block w-full p-3 outline-none transition" placeholder="06 00 00 00 00" required>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="date" class="block text-xs font-medium text-gray-700 uppercase tracking-wider mb-2">Date du trajet</label>
+                                <input type="date" name="date" id="date" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-sm focus:ring-gold focus:border-gold block w-full p-3 outline-none transition">
+                            </div>
+                            <div>
+                                <label for="heure" class="block text-xs font-medium text-gray-700 uppercase tracking-wider mb-2">Heure (approx.)</label>
+                                <input type="time" name="heure" id="heure" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-sm focus:ring-gold focus:border-gold block w-full p-3 outline-none transition">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="passagers" class="block text-xs font-medium text-gray-700 uppercase tracking-wider mb-2">Nombre de passagers</label>
+                                <select name="passagers" id="passagers" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-sm focus:ring-gold focus:border-gold block w-full p-3 outline-none transition">
+                                    <option>1 passager</option>
+                                    <option>2 passagers</option>
+                                    <option>3 passagers</option>
+                                    <option>4 passagers ou +</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="service" class="block text-xs font-medium text-gray-700 uppercase tracking-wider mb-2">Type de service</label>
+                                <select name="service" id="service" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-sm focus:ring-gold focus:border-gold block w-full p-3 outline-none transition">
+                                    <option>Transfert Aéroport / Gare</option>
+                                    <option>Mise à disposition</option>
+                                    <option>Mariage / Événement</option>
+                                    <option>Excursion / Tourisme</option>
+                                    <option>Autre demande</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="message" class="block text-xs font-medium text-gray-700 uppercase tracking-wider mb-2">Votre message</label>
+                            <textarea name="message" id="message" rows="3" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-sm focus:ring-gold focus:border-gold block w-full p-3 outline-none transition" placeholder="Précisez votre adresse de départ, d'arrivée..."></textarea>
+                        </div>
+
+                        <div class="pt-2">
+                            <!-- Bouton modifié avec ID et état initial -->
+                            <button type="submit" id="submit-btn" class="w-full bg-gold hover:bg-gold-dark text-white text-sm uppercase tracking-[0.2em] font-semibold py-4 px-8 rounded-sm shadow-md transition duration-300 flex items-center justify-center">
+                                <span id="btn-text">Envoyer ma demande</span>
+                                <i id="btn-spinner" class="fa-solid fa-circle-notch fa-spin ml-2 hidden"></i>
+                            </button>
+                            <!-- Zone de message de succès/erreur -->
+                            <div id="form-message" class="hidden mt-4 p-4 text-sm rounded-sm text-center"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         MINI-JEU "EN ATTENDANT D'ARRIVER"
+         ========================================================= -->
+    <section id="game-section" class="py-16 md:py-24 px-4" data-nav="dark">
+        <div class="container mx-auto max-w-4xl">
+            
+            <div class="text-center mb-8 md:mb-10">
+                <p class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-gold font-semibold mb-2">
+                    Passez le temps
+                </p>
+                <h2 class="font-title text-2xl md:text-3xl font-normal tracking-widest text-white">
+                    En attendant d'arriver…
+                </h2>
+                <p class="text-sm md:text-base text-gray-400 font-light leading-relaxed mt-4 max-w-xl mx-auto">
+                    Un petit jeu pour passer le temps pendant votre trajet. Sautez par-dessus les obstacles et battez votre record !
+                </p>
+            </div>
+
+            <!-- Zone de jeu -->
+            <div id="game-stage" role="button" tabindex="0" aria-label="Zone de jeu : cliquez ou appuyez sur Espace pour sauter">
+                
+                <!-- HUD -->
+                <div id="game-hud">
+                    <div id="game-score">0</div>
+                    <div id="game-best">Record : <span id="game-best-value">0</span></div>
+                </div>
+                <div id="game-speed">Vitesse ×1.1</div>
+
+                <!-- Voiture joueur -->
+                <div id="player-car">
+                    <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 30,200 L 610,200" stroke="#b39359" stroke-width="4" fill="none" />
+                        <path d="M 40,180 L 40,140 C 40,130 50,120 70,115 L 150,95 L 220,60 C 250,45 300,40 360,40 C 420,40 470,50 520,70 L 580,100 C 600,110 610,120 610,140 L 610,180 Z" />
+                        <path d="M 160,95 L 230,65 C 260,52 300,48 340,48 L 340,95 Z" fill="#0a0a0a" />
+                        <path d="M 360,48 C 410,48 450,55 490,70 L 520,95 L 360,95 Z" fill="#0a0a0a" />
+                        <circle cx="170" cy="180" r="35" fill="#0a0a0a" stroke="#b39359" stroke-width="5"/>
+                        <circle cx="170" cy="180" r="15" fill="#b39359" />
+                        <circle cx="490" cy="180" r="35" fill="#0a0a0a" stroke="#b39359" stroke-width="5"/>
+                        <circle cx="490" cy="180" r="15" fill="#b39359" />
+                        <path d="M 600,125 L 615,130 L 615,140 L 600,145 Z" fill="#e8c766" />
+                        <path d="M 40,130 L 30,130 L 30,145 L 40,145 Z" fill="#e8c766" />
+                    </svg>
+                </div>
+
+                <!-- Overlay : accueil -->
+                <div id="game-start-overlay" class="game-overlay">
+                    <h3>Prêt à prendre le volant ?</h3>
+                    <p>Sautez par-dessus les cônes qui arrivent. Le rythme s'accélère au fil du temps. Battez votre record !</p>
+                    <button id="game-start-btn" class="game-btn" type="button">Jouer</button>
+                </div>
+
+                <!-- Overlay : game over -->
+                <div id="game-over-overlay" class="game-overlay hidden">
+                    <h3>Fin du trajet !</h3>
+                    <p>Score final</p>
+                    <div id="game-final-score">0</div>
+                    <span id="game-record-badge" class="hidden">Nouveau record !</span>
+                    <p style="margin-top: 14px;">Cliquez ou appuyez sur Espace pour rejouer.</p>
+                    <button id="game-restart-btn" class="game-btn" type="button" style="margin-top: 8px;">Rejouer</button>
+                </div>
+            </div>
+
+            <p class="text-center text-xs text-gray-500 mt-4">
+                <i class="fa-solid fa-hand-pointer mr-1 text-gold"></i>
+                Cliquez / tapez pour sauter &nbsp;·&nbsp;
+                <i class="fa-solid fa-keyboard mr-1 text-gold"></i>
+                Espace ou ↑ sur PC
+            </p>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-16 md:py-24 px-4 bg-white" data-nav="light">
+        <div class="container mx-auto max-w-3xl">
+            <div class="text-center mb-12">
+                <p class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-gold font-semibold mb-2">
+                    Questions Fréquentes
+                </p>
+                <h2 class="text-2xl md:text-3xl font-normal uppercase tracking-widest text-gray-900">
+                    Vous avez une question ?
+                </h2>
+            </div>
+
+            <div class="space-y-4">
+                <div class="border border-gray-200 rounded-sm overflow-hidden faq-item">
+                    <button class="w-full flex items-center justify-between p-5 bg-white hover:bg-gray-50 transition-colors text-left faq-button">
+                        <span class="font-medium text-gray-900">Comment se déroule la réservation ?</span>
+                        <i class="fa-solid fa-plus text-gold transition-transform duration-300 faq-icon"></i>
+                    </button>
+                    <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50">
+                        <p class="p-5 text-sm text-gray-600 font-light leading-relaxed">
+                            Vous pouvez réserver en m'appelant directement ou en remplissant le formulaire de contact ci-dessus. Dès réception de votre demande, je vous confirme la disponibilité du véhicule et vous communique un tarif fixe. Aucun paiement n'est demandé à la réservation.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-sm overflow-hidden faq-item">
+                    <button class="w-full flex items-center justify-between p-5 bg-white hover:bg-gray-50 transition-colors text-left faq-button">
+                        <span class="font-medium text-gray-900">Que se passe-t-il si mon vol est retardé ?</span>
+                        <i class="fa-solid fa-plus text-gold transition-transform duration-300 faq-icon"></i>
+                    </button>
+                    <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50">
+                        <p class="p-5 text-sm text-gray-600 font-light leading-relaxed">
+                            Je suis le vol en temps réel. En cas de retard, je m'adapte à votre heure d'arrivée réelle sans frais supplémentaires. Je vous attends avec une pancarte à votre nom dans la zone d'arrivée.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-sm overflow-hidden faq-item">
+                    <button class="w-full flex items-center justify-between p-5 bg-white hover:bg-gray-50 transition-colors text-left faq-button">
+                        <span class="font-medium text-gray-900">Quels sont les moyens de paiement acceptés ?</span>
+                        <i class="fa-solid fa-plus text-gold transition-transform duration-300 faq-icon"></i>
+                    </button>
+                    <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50">
+                        <p class="p-5 text-sm text-gray-600 font-light leading-relaxed">
+                            J'accepte les paiements en espèces, par carte bancaire (via un terminal de paiement mobile), ou par virement bancaire (uniquement pour les réservations anticipées). Une facture vous est fournie systématiquement sur demande.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-sm overflow-hidden faq-item">
+                    <button class="w-full flex items-center justify-between p-5 bg-white hover:bg-gray-50 transition-colors text-left faq-button">
+                        <span class="font-medium text-gray-900">Puis-je voyager avec mon animal de compagnie ?</span>
+                        <i class="fa-solid fa-plus text-gold transition-transform duration-300 faq-icon"></i>
+                    </button>
+                    <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50">
+                        <p class="p-5 text-sm text-gray-600 font-light leading-relaxed">
+                            Oui, les animaux de petite et moyenne taille sont acceptés à condition qu'ils soient dans un sac de transport adapté ou tenus en laisse. Merci de me le préciser lors de la réservation.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="footer" class="bg-[#0a0a0a] text-white pt-16 pb-8 border-t border-gray-800 relative overflow-hidden" data-nav="dark">
+        
+        <div class="footer-car-container">
+            <div class="footer-car">
+                <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M 30,200 L 610,200" stroke="#b39359" stroke-width="4" fill="none" />
+                    <path d="M 40,180 L 40,140 C 40,130 50,120 70,115 L 150,95 L 220,60 C 250,45 300,40 360,40 C 420,40 470,50 520,70 L 580,100 C 600,110 610,120 610,140 L 610,180 Z" />
+                    <path d="M 160,95 L 230,65 C 260,52 300,48 340,48 L 340,95 Z" fill="#0a0a0a" />
+                    <path d="M 360,48 C 410,48 450,55 490,70 L 520,95 L 360,95 Z" fill="#0a0a0a" />
+                    <circle cx="170" cy="180" r="35" fill="#0a0a0a" stroke="#b39359" stroke-width="5"/>
+                    <circle cx="170" cy="180" r="15" fill="#b39359" />
+                    <circle cx="490" cy="180" r="35" fill="#0a0a0a" stroke="#b39359" stroke-width="5"/>
+                    <circle cx="490" cy="180" r="15" fill="#b39359" />
+                    <path d="M 600,125 L 615,130 L 615,140 L 600,145 Z" fill="#e8c766" />
+                    <path d="M 40,130 L 30,130 L 30,145 L 40,145 Z" fill="#e8c766" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 max-w-6xl relative z-10">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-8 mb-12">
+                
+                <div class="col-span-2 flex flex-col items-start">
+                    <div class="footer-logo mb-6">
+                        <img src="https://i.ibb.co/QR5vjKC/logo-fond-noir-removebg-preview-2.png" alt="Logo Drive'OR" class="h-16 md:h-20 w-auto object-contain">
+                    </div>
+                    <p class="text-gray-400 text-sm font-light leading-relaxed max-w-sm">
+                        Votre chauffeur privé à Poitiers et en Nouvelle Aquitaine. Un service haut de gamme, discret et ponctuel.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="font-title text-gold text-lg mb-4">Navigation</h4>
+                    <ul class="space-y-3 text-sm text-gray-400 font-light">
+                        <li><a href="#" class="hover:text-gold transition">Accueil</a></li>
+                        <li><a href="#services" class="hover:text-gold transition">Nos Services</a></li>
+                        <li><a href="#tarifs" class="hover:text-gold transition">Forfaits</a></li>
+                        <li><a href="#inclus" class="hover:text-gold transition">Garanties</a></li>
+                        <li><a href="#chauffeur" class="hover:text-gold transition">À Propos</a></li>
+                        <li><a href="#contact" class="hover:text-gold transition">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-title text-gold text-lg mb-4">Contact</h4>
+                    <ul class="space-y-3 text-sm text-gray-400 font-light">
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-location-dot mt-1 mr-3 text-gold"></i>
+                            <span>Poitiers & Nouvelle Aquitaine</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-phone mr-3 text-gold"></i>
+                            <a href="tel:+33612345678" class="hover:text-gold transition">06 51 88 99 35</a>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-envelope mr-3 text-gold"></i>
+                            <a href="mailto:contact@drivor.fr" class="hover:text-gold transition">contact@drivor.fr</a>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-id-card mr-3 text-gold"></i>
+                            <span>109 965 087 00017</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-car mr-3 text-gold"></i>
+                            <span>080624018901</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between">
+                <p class="text-xs text-gray-500 mb-4 md:mb-0">
+                    &copy; 2025 Drive'OR. Tous droits réservés.
+                </p>
+                <div class="flex space-x-6 text-sm">
+                    <a href="#" class="text-gray-500 hover:text-gold transition">Mentions légales</a>
+                    <a href="#" class="text-gray-500 hover:text-gold transition">Politique de confidentialité</a>
+                    <a href="#" class="text-gray-500 hover:text-gold transition">CGV</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            
+            window.addEventListener('load', function() {
+                document.body.classList.add('loaded');
+            });
+
+            // 1. NAV ADAPTATIVE
+            const nav = document.getElementById('main-nav');
+            const sectionsWithNav = document.querySelectorAll('[data-nav]');
+            let currentNavTheme = 'dark';
+
+            const navObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const theme = entry.target.getAttribute('data-nav');
+                        if (theme && theme !== currentNavTheme) {
+                            currentNavTheme = theme;
+                            if (theme === 'light') {
+                                nav.classList.add('nav-on-light');
+                                nav.classList.remove('nav-on-dark');
+                            } else {
+                                nav.classList.add('nav-on-dark');
+                                nav.classList.remove('nav-on-light');
+                            }
+                        }
+                    }
+                });
+            }, {
+                rootMargin: "-70px 0px -60% 0px",
+                threshold: 0
+            });
+
+            sectionsWithNav.forEach(section => navObserver.observe(section));
+
+            window.addEventListener('scroll', function() {
+                if (window.scrollY < 10 && currentNavTheme !== 'dark') {
+                    currentNavTheme = 'dark';
+                    nav.classList.add('nav-on-dark');
+                    nav.classList.remove('nav-on-light');
+                }
+            }, { passive: true });
+
+            // 2. ANIMATION DES CARTES SERVICES
+            const cards = document.querySelectorAll('.service-card');
+            const observerCards = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    } else {
+                        entry.target.classList.remove('is-visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            cards.forEach(card => observerCards.observe(card));
+
+            // 3. ANIMATION DE LA LISTE "INCLUS"
+            const listSection = document.querySelector('.list-section');
+            const observerList = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    } else {
+                        entry.target.classList.remove('is-visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            if(listSection) observerList.observe(listSection);
+
+            // 4. MENU MOBILE
+            const menuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            menuBtn.addEventListener('click', function() {
+                const isPressed = this.getAttribute('aria-pressed') === 'true';
+                this.setAttribute('aria-pressed', !isPressed);
+                mobileMenu.classList.toggle('open');
+            });
+
+            const mobileLinks = mobileMenu.querySelectorAll('a');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.remove('open');
+                    menuBtn.setAttribute('aria-pressed', 'false');
+                });
+            });
+
+            // 5. VIDÉO HERO
+            const video = document.getElementById('hero-video');
+            if (video) {
+                video.addEventListener('canplay', function() {
+                    video.play().catch(function(error) {
+                        console.log("Lecture auto bloquée : ", error);
+                    });
+                });
+                if (video.readyState >= 3) {
+                    video.play().catch(e => console.log(e));
+                }
+            }
+
+            // 6. FAQ
+            const faqButtons = document.querySelectorAll('.faq-button');
+            
+            faqButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const content = button.nextElementSibling;
+                    const icon = button.querySelector('.faq-icon');
+                    
+                    document.querySelectorAll('.faq-content').forEach(item => {
+                        if (item !== content) {
+                            item.style.maxHeight = null;
+                            item.previousElementSibling.querySelector('.faq-icon').style.transform = 'rotate(0deg)';
+                        }
+                    });
+
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.style.transform = 'rotate(45deg)';
+                    }
+                });
+            });
+
+            // 7. ANIMATION DU FOOTER
+            const footer = document.getElementById('footer');
+            const observerFooter = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        footer.classList.add('footer-animate');
+                    } else {
+                        footer.classList.remove('footer-animate');
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            if(footer) observerFooter.observe(footer);
+
+            // =========================================
+            // 8. MINI-JEU "EN ATTENDANT D'ARRIVER"
+            // =========================================
+            (function initGame() {
+                const stage = document.getElementById('game-stage');
+                const player = document.getElementById('player-car');
+                const scoreEl = document.getElementById('game-score');
+                const bestEl = document.getElementById('game-best-value');
+                const speedEl = document.getElementById('game-speed');
+                const startOverlay = document.getElementById('game-start-overlay');
+                const overOverlay = document.getElementById('game-over-overlay');
+                const finalScoreEl = document.getElementById('game-final-score');
+                const recordBadge = document.getElementById('game-record-badge');
+                const startBtn = document.getElementById('game-start-btn');
+                const restartBtn = document.getElementById('game-restart-btn');
+
+                if (!stage || !player) return;
+
+                // ----- Constantes de gameplay -----
+                const GRAVITY = 3500;              
+                const JUMP_VELOCITY = -1250;       
+                const BASE_SPEED = 220;            
+                const LEVEL_DURATION = 20;         
+                const SPEED_STEP = 0.10;
+                const MAX_LEVEL = 6;
+                const OBSTACLE_MIN_GAP = 520;
+                const OBSTACLE_MAX_GAP = 820;
+                const GAP_TIGHTEN = 0.88;
+                const PLAYER_BOTTOM_PCT = 22;
+                const FIXED_DT = 1 / 120;
+
+                // --- Mouvement horizontal (avancée) ---
+                const PLAYER_START_X_PCT = 8;      
+                const PLAYER_JUMP_FWD_PX = 70;     
+                const PLAYER_RETURN_SPEED = 250;   
+
+                // ----- État -----
+                let state = 'idle';
+                let playerY = 0;
+                let playerVY = 0;
+                let isJumping = false;
+                let playerCurrentX = 0;            
+                let playerBaseX = 0;               
+                
+                let elapsedTime = 0;
+                let level = 0;
+                let speed = BASE_SPEED;
+                let score = 0;
+                let bestScore = parseInt(localStorage.getItem('drivor_best') || '0', 10);
+                let obstacles = [];
+                let distanceToNextObstacle = 0;
+                let lastTime = 0;
+                let rafId = null;
+                let stageW = 0;
+                let stageH = 0;
+                let groundY = 0;
+                let accumulator = 0;
+
+                bestEl.textContent = bestScore;
+
+                function measureStage() {
+                    const rect = stage.getBoundingClientRect();
+                    stageW = rect.width;
+                    stageH = rect.height;
+                    groundY = stageH * (1 - PLAYER_BOTTOM_PCT / 100);
+                    
+                    playerBaseX = stageW * (PLAYER_START_X_PCT / 100);
+                    if (!isJumping && state !== 'running') {
+                        playerCurrentX = playerBaseX;
+                    }
+                }
+
+                function resetGame() {
+                    obstacles.forEach(o => o.el.remove());
+                    obstacles = [];
+                    playerY = 0;
+                    playerVY = 0;
+                    isJumping = false;
+                    accumulator = 0;
+                    measureStage();
+                    playerCurrentX = playerBaseX; 
+                    
+                    player.style.transform = `translate(${playerCurrentX}px, 0px)`;
+                    player.classList.remove('is-jumping');
+                    elapsedTime = 0;
+                    level = 0;
+                    speed = BASE_SPEED;
+                    score = 0;
+                    scoreEl.textContent = '0';
+                    speedEl.textContent = 'Vitesse ×1.1';
+                    distanceToNextObstacle = OBSTACLE_MIN_GAP + Math.random() * (OBSTACLE_MAX_GAP - OBSTACLE_MIN_GAP);
+                }
+
+                function createObstacleSvg() {
+                    return `
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M32 4 L50 54 L14 54 Z" />
+                            <rect x="10" y="54" width="44" height="6" rx="2" />
+                            <rect x="22" y="30" width="20" height="6" rx="2" fill="#0a0a0a"/>
+                        </svg>
+                    `;
+                }
+
+                function spawnObstacle() {
+                    const el = document.createElement('div');
+                    el.className = 'obstacle';
+                    el.innerHTML = createObstacleSvg();
+                    stage.appendChild(el);
+                    const w = el.offsetWidth || 22; 
+                    const h = el.offsetHeight || 22;
+                    el.style.left = stageW + 'px';
+                    obstacles.push({ el, x: stageW, w, h });
+                }
+
+                function jump() {
+                    if (state !== 'running') return;
+                    if (isJumping) return;
+                    isJumping = true;
+                    playerVY = JUMP_VELOCITY;
+                    player.classList.add('is-jumping');
+                }
+
+                function gameOver() {
+                    state = 'over';
+                    cancelAnimationFrame(rafId);
+                    rafId = null;
+                    finalScoreEl.textContent = score;
+
+                    if (score > bestScore) {
+                        bestScore = score;
+                        localStorage.setItem('drivor_best', String(bestScore));
+                        bestEl.textContent = bestScore;
+                        recordBadge.classList.remove('hidden');
+                    } else {
+                        recordBadge.classList.add('hidden');
+                    }
+                    overOverlay.classList.remove('hidden');
+                }
+
+                function startGame() {
+                    resetGame();
+                    state = 'running';
+                    startOverlay.classList.add('hidden');
+                    overOverlay.classList.add('hidden');
+                    lastTime = performance.now();
+                    accumulator = 0;
+                    if (rafId) cancelAnimationFrame(rafId);
+                    rafId = requestAnimationFrame(loop);
+                }
+
+                function stepPhysics(dt) {
+                    elapsedTime += dt;
+                    const newLevel = Math.min(MAX_LEVEL, Math.floor(elapsedTime / LEVEL_DURATION));
+                    if (newLevel !== level) {
+                        level = newLevel;
+                        speed = BASE_SPEED * (1 + level * SPEED_STEP);
+                    }
+
+                    if (isJumping) {
+                        playerVY += GRAVITY * dt;
+                        playerY += playerVY * dt;
+
+                        const targetForwardX = playerBaseX + PLAYER_JUMP_FWD_PX;
+                        playerCurrentX += speed * dt; 
+                        if (playerCurrentX > targetForwardX) {
+                            playerCurrentX = targetForwardX;
+                        }
+
+                        if (playerY >= 0) {
+                            playerY = 0;
+                            playerVY = 0;
+                            isJumping = false;
+                            player.classList.remove('is-jumping');
+                        }
+                    } else {
+                        if (playerCurrentX > playerBaseX) {
+                            playerCurrentX -= PLAYER_RETURN_SPEED * dt;
+                            if (playerCurrentX < playerBaseX) playerCurrentX = playerBaseX;
+                        }
+                    }
+
+                    player.style.transform = `translate(${playerCurrentX - playerBaseX}px, ${playerY}px)`;
+
+                    const moveAmount = speed * dt;
+                    for (let i = obstacles.length - 1; i >= 0; i--) {
+                        const o = obstacles[i];
+                        o.x -= moveAmount;
+                        o.el.style.left = o.x + 'px';
+                        if (o.x + o.w < -20) {
+                            o.el.remove();
+                            obstacles.splice(i, 1);
+                            score += 1;
+                            scoreEl.textContent = score;
+                        }
+                    }
+
+                    distanceToNextObstacle -= moveAmount;
+                    if (distanceToNextObstacle <= 0) {
+                        spawnObstacle();
+                        const tighten = Math.pow(GAP_TIGHTEN, level);
+                        const gap = (OBSTACLE_MIN_GAP + Math.random() * (OBSTACLE_MAX_GAP - OBSTACLE_MIN_GAP)) * tighten;
+                        distanceToNextObstacle = gap;
+                    }
+                }
+
+                function loop(now) {
+                    if (state !== 'running') return;
+
+                    if (!lastTime) lastTime = now;
+                    let frameDt = (now - lastTime) / 1000;
+                    lastTime = now;
+
+                    if (frameDt > 0.1) frameDt = 0.1;
+
+                    accumulator += frameDt;
+                    while (accumulator >= FIXED_DT) {
+                        stepPhysics(FIXED_DT);
+                        accumulator -= FIXED_DT;
+                    }
+
+                    speedEl.textContent = 'Vitesse ×' + (1.1 + level * SPEED_STEP).toFixed(1);
+
+                    const playerRect = player.getBoundingClientRect();
+                    const stageRect = stage.getBoundingClientRect();
+                    const px = playerRect.left - stageRect.left; 
+                    const py = playerRect.top - stageRect.top;
+                    const pw = playerRect.width;
+                    const ph = playerRect.height;
+
+                    for (const o of obstacles) {
+                        const margin = 12; 
+                        if (
+                            px + pw - margin > o.x &&
+                            px + margin < o.x + o.w &&
+                            py + ph - margin > groundY - o.h &&
+                            py + margin < groundY
+                        ) {
+                            gameOver();
+                            return;
+                        }
+                    }
+
+                    rafId = requestAnimationFrame(loop);
+                }
+
+                function onStagePointerDown(e) {
+                    if (e.target.closest('.game-btn') || e.target.closest('.game-overlay')) {
+                        return;
+                    }
+                    if (state === 'running') e.preventDefault();
+
+                    if (state === 'running') {
+                        jump();
+                    }
+                }
+
+                stage.addEventListener('pointerdown', onStagePointerDown);
+
+                stage.addEventListener('keydown', function(e) {
+                    if (e.code === 'Space' || e.code === 'ArrowUp') {
+                        e.preventDefault();
+                        if (state === 'running') jump();
+                        else if (state === 'over') startGame();
+                    }
+                });
+
+                stage.addEventListener('click', function() {
+                    stage.focus();
+                });
+
+                startBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    startGame();
+                });
+
+                restartBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    startGame();
+                });
+
+                startBtn.addEventListener('pointerdown', function(e) { e.stopPropagation(); });
+                restartBtn.addEventListener('pointerdown', function(e) { e.stopPropagation(); });
+
+                window.addEventListener('resize', measureStage);
+
+                document.addEventListener('visibilitychange', function() {
+                    if (document.hidden && state === 'running') {
+                        cancelAnimationFrame(rafId);
+                        rafId = null;
+                        state = 'idle';
+                        resetGame();
+                        startOverlay.classList.remove('hidden');
+                    }
+                });
+
+                measureStage();
+                playerCurrentX = playerBaseX;
+                player.style.transform = `translate(0px, 0px)`;
+            })();
+
+            // =========================================
+            // 9. GESTION DU FORMULAIRE (AJAX)
+            // =========================================
+            const form = document.getElementById('contact-form');
+            const submitBtn = document.getElementById('submit-btn');
+            const btnText = document.getElementById('btn-text');
+            const btnSpinner = document.getElementById('btn-spinner');
+            const formMessage = document.getElementById('form-message');
+
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault(); // Empêche le rechargement de la page
+
+                    // État de chargement
+                    btnText.textContent = 'Envoi en cours...';
+                    btnSpinner.classList.remove('hidden');
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                    formMessage.classList.add('hidden');
+
+                    const formData = new FormData(form);
+
+                    fetch(form.action, {
+                        method: form.method,
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            // Succès
+                            form.reset(); // Vide le formulaire
+                            formMessage.textContent = "Merci, votre demande a bien été envoyée. Je vous réponds sous 2 heures.";
+                            formMessage.className = "mt-4 p-4 text-sm rounded-sm text-center bg-green-100 text-green-800 border border-green-200";
+                            formMessage.classList.remove('hidden');
+                        } else {
+                            // Erreur serveur (Formspree)
+                            response.json().then(data => {
+                                if (Object.hasOwn(data, 'errors')) {
+                                    formMessage.textContent = data["errors"].map(error => error["message"]).join(", ");
+                                } else {
+                                    formMessage.textContent = "Oups, une erreur est survenue. Veuillez m'appeler directement.";
+                                }
+                                formMessage.className = "mt-4 p-4 text-sm rounded-sm text-center bg-red-100 text-red-800 border border-red-200";
+                                formMessage.classList.remove('hidden');
+                            })
+                        }
+                    }).catch(error => {
+                        // Erreur réseau
+                        formMessage.textContent = "Oups, une erreur réseau est survenue. Veuillez vérifier votre connexion.";
+                        formMessage.className = "mt-4 p-4 text-sm rounded-sm text-center bg-red-100 text-red-800 border border-red-200";
+                        formMessage.classList.remove('hidden');
+                    }).finally(() => {
+                        // Réinitialisation du bouton
+                        btnText.textContent = 'Envoyer ma demande';
+                        btnSpinner.classList.add('hidden');
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
